@@ -12,7 +12,8 @@ class VideojuegoController extends Controller
      */
     public function index()
     {
-        //
+        $videojuegos = Videojuego::with('user')->get();
+        return view('videojuegos.index', compact('videojuegos'));
     }
 
     /**
@@ -20,7 +21,7 @@ class VideojuegoController extends Controller
      */
     public function create()
     {
-        //
+        return view('videojuegos.create');
     }
 
     /**
@@ -28,7 +29,24 @@ class VideojuegoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Valida y guarda el videojuego
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'caratula' => 'nullable|image|max:2048', // Imagen opcional, 2 MB máximo
+        ]);
+
+        // Subir carátula si se proporciona
+        if ($request->hasFile('caratula')) {
+            $validated['caratula'] = $request->file('caratula')->store('caratulas', 'public');
+        }
+
+        $videojuego = auth()->user()->videojuegos()->create($validated);
+
+        // Lógica para enviar correo al admin (se detalla más abajo)
+        \Mail::to('admin@example.com')->send(new \App\Mail\NuevoVideojuego($videojuego));
+
+        return redirect()->route('videojuegos.index')->with('success', 'Videojuego creado con éxito.');
     }
 
     /**
@@ -36,7 +54,7 @@ class VideojuegoController extends Controller
      */
     public function show(Videojuego $videojuego)
     {
-        //
+        return view('videojuegos.show', compact('videojuego'));
     }
 
     /**
@@ -44,7 +62,9 @@ class VideojuegoController extends Controller
      */
     public function edit(Videojuego $videojuego)
     {
-        //
+        // Formulario de edición
+        $this->authorize('update', $videojuego);
+        return view('videojuegos.edit', compact('videojuego'));
     }
 
     /**
@@ -52,7 +72,20 @@ class VideojuegoController extends Controller
      */
     public function update(Request $request, Videojuego $videojuego)
     {
-        //
+        // Valida y actualiza el videojuego
+        $this->authorize('update', $videojuego);
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+            'caratula' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('caratula')) {
+            $validated['caratula'] = $request->file('caratula')->store('caratulas', 'public');
+        }
+
+        $videojuego->update($validated);
+        return redirect()->route('videojuegos.index')->with('success', 'Videojuego actualizado con éxito.');
     }
 
     /**
@@ -60,6 +93,8 @@ class VideojuegoController extends Controller
      */
     public function destroy(Videojuego $videojuego)
     {
-        //
+        $this->authorize('delete', $videojuego);
+        $videojuego->delete();
+        return redirect()->route('videojuegos.index')->with('success', 'Videojuego eliminado.');
     }
 }
