@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('comentarios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('videojuego_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->tinyInteger('puntuacion')->unsigned()->default(1); // De 1 a 5 estrellas
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('videojuego_id');
+            $table->tinyInteger('puntuacion')->unsigned(); // 1 a 5 estrellas
             $table->text('comentario')->nullable();
             $table->timestamps();
+    
+            // Foráneas
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('videojuego_id')->references('id')->on('videojuegos')->onDelete('cascade');
         });
     }
 

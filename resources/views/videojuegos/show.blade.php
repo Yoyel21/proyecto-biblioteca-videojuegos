@@ -39,6 +39,28 @@
         @endif
     </div>
     @endsection
+
+    <form action="{{ route('comentarios.store', $videojuego) }}" method="POST">
+        @csrf
+        <label for="puntuacion">Puntuación:</label>
+        <select name="puntuacion" id="puntuacion" required>
+            @for ($i = 1; $i <= 5; $i++)
+                <option value="{{ $i }}">{{ $i }} estrella{{ $i > 1 ? 's' : '' }}</option>
+            @endfor
+        </select>
+
+        <textarea name="comentario" placeholder="Escribe un comentario (opcional)"></textarea>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <h3>Valoraciones</h3>
+    @forelse ($videojuego->comentarios as $comentario)
+        <p><strong>{{ $comentario->user->name }}</strong> ({{ $comentario->puntuacion }} estrellas):</p>
+        <p>{{ $comentario->comentario }}</p>
+    @empty
+        <p>No hay valoraciones aún.</p>
+    @endforelse
 </body>
 
 </html>

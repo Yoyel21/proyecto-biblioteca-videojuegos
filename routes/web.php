@@ -29,4 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/videojuegos/create', [VideojuegoController::class, 'create'])->name('videojuegos.create');
     Route::post('/videojuegos', [VideojuegoController::class, 'store'])->name('videojuegos.store');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/videojuegos/{videojuego}/comentarios', [ComentarioController::class, 'store'])->name('comentarios.store');
+    Route::put('/comentarios/{comentario}', [ComentarioController::class, 'update'])->name('comentarios.update');
+    Route::delete('/comentarios/{comentario}', [ComentarioController::class, 'destroy'])->name('comentarios.destroy');
+});
+
 require __DIR__ . '/auth.php';

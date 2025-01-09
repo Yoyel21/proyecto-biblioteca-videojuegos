@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
+
+    public function comentarios()
+{
+    return $this->hasMany(Comentario::class);
+}
 }

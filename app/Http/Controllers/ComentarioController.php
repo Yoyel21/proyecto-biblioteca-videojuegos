@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comentario;
+use App\Models\Videojuego;
 use Illuminate\Http\Request;
 
 class ComentarioController extends Controller
@@ -26,9 +27,21 @@ class ComentarioController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Videojuego $videojuego)
     {
-        //
+        $request->validate([
+            'puntuacion' => 'required|integer|min:1|max:5',
+            'comentario' => 'nullable|string|max:500',
+        ]);
+
+        Comentario::create([
+            'user_id' => auth()->id(),
+            'videojuego_id' => $videojuego->id,
+            'puntuacion' => $request->puntuacion,
+            'comentario' => $request->comentario,
+        ]);
+
+        return redirect()->route('videojuegos.show', $videojuego)->with('success', 'Comentario añadido.');
     }
 
     /**
@@ -52,7 +65,16 @@ class ComentarioController extends Controller
      */
     public function update(Request $request, Comentario $comentario)
     {
-        //
+        $this->authorize('update', $comentario);
+
+        $request->validate([
+            'puntuacion' => 'required|integer|min:1|max:5',
+            'comentario' => 'nullable|string|max:500',
+        ]);
+
+        $comentario->update($request->only('puntuacion', 'comentario'));
+
+        return redirect()->route('videojuegos.show', $comentario->videojuego_id)->with('success', 'Comentario actualizado.');
     }
 
     /**
@@ -60,6 +82,10 @@ class ComentarioController extends Controller
      */
     public function destroy(Comentario $comentario)
     {
-        //
+        $this->authorize('delete', $comentario);
+
+        $comentario->delete();
+    
+        return redirect()->route('videojuegos.show', $comentario->videojuego_id)->with('success', 'Comentario eliminado.');
     }
 }
