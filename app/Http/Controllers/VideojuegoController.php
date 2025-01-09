@@ -12,8 +12,8 @@ class VideojuegoController extends Controller
      */
     public function index()
     {
-        $videojuegos = Videojuego::with('user')->get();
-        return view('videojuegos.index', compact('videojuegos'));
+        $videojuegos = Videojuego::all();
+        return view('videojuegos.index', compact('videojuegos')); 
     }
 
     /**
@@ -52,8 +52,9 @@ class VideojuegoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Videojuego $videojuego)
+    public function show($id)
     {
+        $videojuego = Videojuego::with('comentarios.usuario')->findOrFail($id);
         return view('videojuegos.show', compact('videojuego'));
     }
 
@@ -91,10 +92,15 @@ class VideojuegoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Videojuego $videojuego)
+    public function destroy($id)
     {
-        $this->authorize('delete', $videojuego);
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
+
+        $videojuego = Videojuego::findOrFail($id);
         $videojuego->delete();
-        return redirect()->route('videojuegos.index')->with('success', 'Videojuego eliminado.');
+
+        return redirect()->route('videojuegos.index')->with('success', 'Videojuego eliminado correctamente.');
     }
 }
