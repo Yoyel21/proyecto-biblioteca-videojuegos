@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comentario;
+use App\Models\User;
 use App\Models\Videojuego;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class ComentarioController extends Controller
 {
@@ -35,7 +38,7 @@ class ComentarioController extends Controller
         ]);
 
         Comentario::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth()->id(),
             'videojuego_id' => $videojuego->id,
             'puntuacion' => $request->puntuacion,
             'comentario' => $request->comentario,

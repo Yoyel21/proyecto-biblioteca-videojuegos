@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Videojuego;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class VideojuegoController extends Controller
 {
@@ -44,7 +45,7 @@ class VideojuegoController extends Controller
         $videojuego = auth()->user()->videojuegos()->create($validated);
 
         // Lógica para enviar correo al admin (se detalla más abajo)
-        \Mail::to('admin@example.com')->send(new \App\Mail\NuevoVideojuego($videojuego));
+        Mail::to('admin@example.com')->send(new \App\Mail\NuevoVideojuego($videojuego));
 
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego creado con éxito.');
     }
