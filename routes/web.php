@@ -36,4 +36,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/comentarios/{comentario}', [ComentarioController::class, 'destroy'])->name('comentarios.destroy');
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::resource('videojuegos', VideojuegoController::class);
+});
+
 require __DIR__ . '/auth.php';

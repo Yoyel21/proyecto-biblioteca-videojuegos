@@ -3,7 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Egulias\EmailValidator\Parser\Comment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -52,8 +55,8 @@ class User extends Authenticatable
         return $this->is_admin;
     }
 
-    public function comentarios()
-{
-    return $this->hasMany(Comentario::class);
-}
+    public function user(): HasOne
+    {
+        return $this->hasOne(Comment::class);
+    }
 }
