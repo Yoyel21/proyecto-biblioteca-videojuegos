@@ -44,7 +44,7 @@ class ComentarioController extends Controller
             'comentario' => $request->comentario,
         ]);
 
-        return redirect()->route('videojuegos.show', $videojuego)->with('success', 'Comentario añadido.');
+        return redirect()->route('videojuegos.show', $videojuego)->with('success', 'Valoración añadida con éxito.');
     }
 
     /**
@@ -68,16 +68,15 @@ class ComentarioController extends Controller
      */
     public function update(Request $request, Comentario $comentario)
     {
-        $this->authorize('update', $comentario);
-
-        $request->validate([
+        $validated = $request->validate([
             'puntuacion' => 'required|integer|min:1|max:5',
-            'comentario' => 'nullable|string|max:500',
+            'comentario' => 'nullable|string|max:255',
         ]);
+    
+        $comentario->update($validated);
 
-        $comentario->update($request->only('puntuacion', 'comentario'));
-
-        return redirect()->route('videojuegos.show', $comentario->videojuego_id)->with('success', 'Comentario actualizado.');
+        return redirect()->route('videojuegos.show', $comentario->videojuego->id)
+    ->with('success', 'Valoración actualizada con éxito.');
     }
 
     /**
@@ -88,7 +87,7 @@ class ComentarioController extends Controller
         $this->authorize('delete', $comentario);
 
         $comentario->delete();
-    
+
         return redirect()->route('videojuegos.show', $comentario->videojuego_id)->with('success', 'Comentario eliminado.');
     }
 }

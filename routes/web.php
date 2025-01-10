@@ -44,4 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('videojuegos', VideojuegoController::class);
 });
 
+Route::get('/videojuegos/create', [VideojuegoController::class, 'create'])->name('videojuegos.create')->middleware('auth');
+
+Route::post('/videojuegos', [VideojuegoController::class, 'store'])->name('videojuegos.store')->middleware('auth');
+
+// Crear un nuevo comentario
+Route::post('/comentarios', [ComentarioController::class, 'store'])->name('comentarios.store');
+
+// Actualizar un comentario existente
+Route::put('/comentarios/{comentario}', [ComentarioController::class, 'update'])->name('comentarios.update');
+
 require __DIR__ . '/auth.php';

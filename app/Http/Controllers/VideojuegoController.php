@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NuevoVideojuego;
 use App\Models\Videojuego;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -34,18 +35,25 @@ class VideojuegoController extends Controller
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'caratula' => 'nullable|image|max:2048', // Imagen opcional, 2 MB máximo
+            'caratula' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // Imagen opcional, 2 MB máximo
         ]);
 
         // Subir carátula si se proporciona
+        $caratulaPath = null;
         if ($request->hasFile('caratula')) {
-            $validated['caratula'] = $request->file('caratula')->store('caratulas', 'public');
+            $caratulaPath = $request->file('caratula')->store('caratulas', 'public');
         }
 
         $videojuego = auth()->user()->videojuegos()->create($validated);
 
+        $videojuego->titulo = $request->titulo;
+        $videojuego->descripcion = $request->descripcion;
+        $videojuego->caratula = $caratulaPath;
+        $videojuego->user_id = auth()->id();
+        $videojuego->save();
+
         // Lógica para enviar correo al admin (se detalla más abajo)
-        Mail::to('admin@example.com')->send(new \App\Mail\NuevoVideojuego($videojuego));
+        // Mail::to('admin@example.com')->send(new NuevoVideojuego($videojuego));
 
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego creado con éxito.');
     }

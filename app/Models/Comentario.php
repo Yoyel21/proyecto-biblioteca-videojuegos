@@ -23,6 +23,13 @@ class Comentario extends Model
 
     public function videojuego()
     {
-        return $this->belongsTo(Videojuego::class);
+        return $this->belongsTo(Videojuego::class, "videojuego_id");
+    }
+
+    public static function comentarioExistente($usuario_id, $videojuego_id)
+    {
+        return self::where('user_id', $usuario_id)
+            ->where('videojuego_id', $videojuego_id)
+            ->exists();
     }
 }
