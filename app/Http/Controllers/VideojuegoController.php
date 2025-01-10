@@ -55,7 +55,7 @@ class VideojuegoController extends Controller
      */
     public function show($id)
     {
-        $videojuego = Videojuego::with('comentarios.usuario')->findOrFail($id);
+        $videojuego = Videojuego::with('comentarios.user')->findOrFail($id);
         return view('videojuegos.show', compact('videojuego'));
     }
 

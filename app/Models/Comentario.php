@@ -9,11 +9,16 @@ class Comentario extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'videojuego_id', 'puntuacion', 'comentario'];
+    protected $fillable = [
+        'user_id',
+        'videojuego_id',
+        'puntuacion',
+        'comentario'
+    ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function videojuego()

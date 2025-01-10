@@ -12,7 +12,7 @@
         <h2>Comentarios</h2>
         @forelse ($videojuego->comentarios as $comentario)
             <div>
-                <p><strong>{{ $comentario->usuario->name }}:</strong> {{ $comentario->comentario }}</p>
+                <p><strong>{{ $comentario->user->name }}:</strong> {{ $comentario->comentario }}</p>
                 <p>Valoración: {{ $comentario->puntuacion }} estrellas</p>
             </div>
         @empty
