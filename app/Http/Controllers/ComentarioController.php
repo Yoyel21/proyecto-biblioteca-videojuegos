@@ -50,9 +50,9 @@ class ComentarioController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Comentario $comentario)
+    public function show(Videojuego $videojuego)
     {
-        //
+        return view('videojuegos.show', compact('videojuego'));
     }
 
     /**

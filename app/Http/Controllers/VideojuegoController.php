@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NuevoVideojuego;
 use App\Models\Videojuego;
+use Illuminate\Container\Attributes\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -48,7 +49,7 @@ class VideojuegoController extends Controller
 
         $videojuego->titulo = $request->titulo;
         $videojuego->descripcion = $request->descripcion;
-        $videojuego->caratula = $caratulaPath;
+        $videojuego->caratula = basename($caratulaPath);
         $videojuego->user_id = auth()->id();
         $videojuego->save();
 
@@ -72,8 +73,10 @@ class VideojuegoController extends Controller
      */
     public function edit(Videojuego $videojuego)
     {
-        // Formulario de edición
-        $this->authorize('update', $videojuego);
+        if (auth()->user()->id !== $videojuego->user_id && !auth()->user()->is_admin) {
+            abort(403, 'No tienes permiso para editar este videojuego.');
+        }
+    
         return view('videojuegos.edit', compact('videojuego'));
     }
 
@@ -87,12 +90,22 @@ class VideojuegoController extends Controller
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
-            'caratula' => 'nullable|image|max:2048',
+            'caratula' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $caratulaPath = $videojuego->caratula; 
         if ($request->hasFile('caratula')) {
-            $validated['caratula'] = $request->file('caratula')->store('caratulas', 'public');
+            if ($caratulaPath) {
+                Storage::disk('public')->delete($caratulaPath); 
+            }
+            $caratulaPath = $request->file('caratula')->store('caratulas', 'public');
         }
+    
+        $videojuego->update([
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion,
+            'caratula' => basename($caratulaPath),
+        ]);
 
         $videojuego->update($validated);
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego actualizado con éxito.');
@@ -103,7 +116,7 @@ class VideojuegoController extends Controller
      */
     public function destroy($id)
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->is_admin) {
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
 
