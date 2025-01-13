@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('comentarios', function (Blueprint $table) {
+        Schema::create('valoracions', function (Blueprint $table) {
             $table->id();
             $table->text('comentario')->nullable();
-            $table->unsignedTinyInteger('puntuacion');
+            $table->unsignedTinyInteger('puntuacion');  // 1 a 5
             $table->foreignId('videojuego_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();

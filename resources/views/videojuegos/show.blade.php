@@ -7,7 +7,8 @@
             <p class="text-gray-700 text-lg mb-4">{{ $videojuego->descripcion }}</p>
 
             @if ($videojuego->caratula)
-            <img src="{{ asset('storage/caratulas/' . $videojuego->caratula) }}" alt="Carátula" class="w-16 h-auto rounded-md shadow-md">
+                <img src="{{ asset('storage/caratulas/' . $videojuego->caratula) }}" alt="Carátula"
+                    class="w-16 h-auto rounded-md shadow-md">
             @endif
 
             <h2 class="text-2xl font-semibold text-purple-600 mb-4">Comentarios</h2>
@@ -67,7 +68,7 @@
         </div>
 
         <div class="mt-6 flex items-center space-x-4">
-            @if (auth()->user()->id === $videojuego->user_id || auth()->user()->hasRole('Admin'))
+            @if (auth()->user()->is_admin || auth()->user()->id == $videojuego->user_id)
                 <a href="{{ route('videojuegos.edit', $videojuego) }}"
                     class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Editar Videojuego

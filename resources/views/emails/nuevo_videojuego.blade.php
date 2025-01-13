@@ -13,11 +13,12 @@
     <ul>
         <li><strong>Título:</strong> {{ $videojuego->titulo }}</li>
         <li><strong>Descripción:</strong> {{ $videojuego->descripcion }}</li>
-        <li><strong>Creado por:</strong> {{ $videojuego->user->name }}</li>
+        <li><strong>Creado por:</strong> {{ $videojuego->user->name }} ({{ $videojuego->user->email }})</li>
+        <li><strong>Fecha de creación:</strong> {{ $videojuego->created_at }}</li>
     </ul>
     @if ($videojuego->caratula)
         <p><strong>Carátula:</strong></p>
-        <img src="{{ asset('storage/' . $videojuego->caratula) }}" alt="Carátula del videojuego" style="max-width: 200px;">
+        <img src="{{ asset('storage/caratulas/' . $videojuego->caratula) }}" alt="Carátula del videojuego" style="max-width: 200px;">
     @endif
 </body>
 

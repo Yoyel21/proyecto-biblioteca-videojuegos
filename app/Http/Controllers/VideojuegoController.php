@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NuevoVideojuego;
 use App\Models\Videojuego;
-use Illuminate\Container\Attributes\Storage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -16,7 +16,7 @@ class VideojuegoController extends Controller
     public function index()
     {
         $videojuegos = Videojuego::paginate(10);
-        return view('videojuegos.index', compact('videojuegos')); 
+        return view('videojuegos.index', compact('videojuegos'));
     }
 
     /**
@@ -53,8 +53,9 @@ class VideojuegoController extends Controller
         $videojuego->user_id = auth()->id();
         $videojuego->save();
 
-        // Lógica para enviar correo al admin (se detalla más abajo)
-        // Mail::to('admin@example.com')->send(new NuevoVideojuego($videojuego));
+
+        // Lógica para enviar correo al admin
+        // Mail::to('ppedrolo957@gmail.com')->send(new NuevoVideojuego($videojuego));
 
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego creado con éxito.');
     }
@@ -76,7 +77,7 @@ class VideojuegoController extends Controller
         if (auth()->user()->id !== $videojuego->user_id && !auth()->user()->is_admin) {
             abort(403, 'No tienes permiso para editar este videojuego.');
         }
-    
+
         return view('videojuegos.edit', compact('videojuego'));
     }
 
@@ -85,29 +86,34 @@ class VideojuegoController extends Controller
      */
     public function update(Request $request, Videojuego $videojuego)
     {
-        // Valida y actualiza el videojuego
-        $this->authorize('update', $videojuego);
-        $validated = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'caratula' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
 
-        $caratulaPath = $videojuego->caratula; 
-        if ($request->hasFile('caratula')) {
-            if ($caratulaPath) {
-                Storage::disk('public')->delete($caratulaPath); 
-            }
-            $caratulaPath = $request->file('caratula')->store('caratulas', 'public');
+        if (auth()->user()->id !== $videojuego->user_id && !auth()->user()->is_admin) {
+            abort(403, 'No tienes permiso para editar este videojuego.');
         }
-    
-        $videojuego->update([
-            'titulo' => $request->titulo,
-            'descripcion' => $request->descripcion,
-            'caratula' => basename($caratulaPath),
+
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'caratula' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $videojuego->update($validated);
+        // Actualizar título y descripción
+        $videojuego->titulo = $request->titulo;
+        $videojuego->descripcion = $request->descripcion;
+
+        // Manejar la nueva carátula si se subió
+        if ($request->hasFile('caratula')) {
+            // Eliminar la carátula anterior si existe
+            if ($videojuego->caratula) {
+                Storage::disk('public')->delete($videojuego->caratula);
+            }
+
+            // Guardar la nueva carátula
+            $videojuego->caratula = $request->file('caratula')->store('caratulas', 'public');
+        }
+
+        // Guardar cambios
+        $videojuego->save();
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego actualizado con éxito.');
     }
 

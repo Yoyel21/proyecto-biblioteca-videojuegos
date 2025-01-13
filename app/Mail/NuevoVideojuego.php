@@ -38,7 +38,7 @@ class NuevoVideojuego extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.nuevo_videojuego',
         );
     }
 
@@ -54,8 +54,10 @@ class NuevoVideojuego extends Mailable
 
     public function build()
     {
-        return $this->view('emails.nuevo_videojuego')
-            ->subject('Nuevo videojuego creado')
-            ->with(['videojuego' => $this->videojuego]);
+        return $this->subject('Nuevo Videojuego Creado')
+        ->view('emails.nuevo_videojuego')
+        ->with([
+            'videojuego' => $this->videojuego
+        ]);
     }
 }
