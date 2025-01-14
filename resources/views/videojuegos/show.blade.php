@@ -7,7 +7,7 @@
             <p class="text-gray-700 text-lg mb-4">{{ $videojuego->descripcion }}</p>
 
             @if ($videojuego->caratula)
-                <img src="{{ asset('storage/caratulas/' . $videojuego->caratula) }}" alt="Carátula"
+                <img src="{{ asset('storage/' . $videojuego->caratula) }}" alt="Carátula"
                     class="w-16 h-auto rounded-md shadow-md">
             @endif
 

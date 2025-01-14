@@ -32,7 +32,7 @@
                     </td>
                     <td class="px-4 py-3">
                         @if ($videojuego->caratula)
-                            <img src="{{ asset('storage/caratulas/' . $videojuego->caratula) }}" alt="Carátula" class="w-16 h-auto rounded-md shadow-md">
+                            <img src="{{ asset('storage/' . $videojuego->caratula) }}" alt="Carátula" class="w-16 h-auto rounded-md shadow-md">
                         @else
                             <span class="text-gray-500 italic">Sin carátula</span>
                         @endif

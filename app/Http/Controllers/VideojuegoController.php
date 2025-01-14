@@ -55,7 +55,7 @@ class VideojuegoController extends Controller
 
 
         // Lógica para enviar correo al admin
-        // Mail::to('ppedrolo957@gmail.com')->send(new NuevoVideojuego($videojuego));
+        Mail::to('ppedrolo957@gmail.com')->send(new NuevoVideojuego($videojuego));
 
         return redirect()->route('videojuegos.index')->with('success', 'Videojuego creado con éxito.');
     }
